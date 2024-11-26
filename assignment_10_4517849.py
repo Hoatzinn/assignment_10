@@ -4,14 +4,34 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
+import assignment_9
+from pprint import pprint
 
-def read_scrabble_score(path:str):
+def read_scrabble_score(path:str) -> assignment_9.ScrabbleScorer:
     with open(path, "r") as file:
-        result = file.read()
-    return result
+        content = file.readlines()
+    
+    content = content[1:-1]
+    dictionary = {}
+    for line in content:
+        if not line == content[-1]:
+            dictionary[line[5:6]] = int(line[9:-2])
+        else:
+            dictionary[line[5:6]] = int(line[-3:-1])
 
-def read_student_data():
-    pass
+    return assignment_9.ScrabbleScorer(dictionary)
+
+def read_student_data(path: str, scrabble: assignment_9.ScrabbleScorer) -> assignment_9.Database:
+    with open(path, "r") as file:
+        content = file.readlines()
+    content = [line.split(",") for line in content]
+    for line in content:
+        for e in range(len(line)):
+            print(e)
+            if line[e] == "" or line[e] == "\n":
+                line.pop(e)
+    pprint(content)
+    
 
 def show_count_scrabble_score():
     pass
@@ -30,11 +50,11 @@ if __name__ == "__main__":
     scrabble = read_scrabble_score("scrabble_scores.json")
     data = read_student_data("database.csv", scrabble)
 
-  	# Plots for the main assignment 
-    show_count_scrabble_score(data)
-    show_count_average_grade(data)
-    show_name_length_vs_scrabble_score(data)
-    show_average_grade_vs_scrabble_score(data)
+  	# # Plots for the main assignment 
+    # show_count_scrabble_score(data)
+    # show_count_average_grade(data)
+    # show_name_length_vs_scrabble_score(data)
+    # show_average_grade_vs_scrabble_score(data)
 
   	# Uncomment the code below for the extra bits
   
