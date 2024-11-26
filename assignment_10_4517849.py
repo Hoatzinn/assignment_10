@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
 import assignment_9
-from pprint import pprint
 
 def read_scrabble_score(path:str) -> assignment_9.ScrabbleScorer:
     with open(path, "r") as file:
@@ -23,17 +22,35 @@ def read_scrabble_score(path:str) -> assignment_9.ScrabbleScorer:
 
 def read_student_data(path: str, scrabble: assignment_9.ScrabbleScorer) -> assignment_9.Database:
     with open(path, "r") as file:
-        content = file.readlines()
+        content = file.read()
+    content = content.split("\n")
+
     content = [line.split(",") for line in content]
+    
+    improved_list = []
     for line in content:
         for e in range(len(line)):
-            print(e)
-            if line[e] == "" or line[e] == "\n":
-                line.pop(e)
-    pprint(content)
+            if line[e] == "":
+                line = line[:e]
+                break
+        improved_list.append(line)
     
+    improved_list = improved_list[1:-1]
+    
+    student_names = [line[0] for line in improved_list]
+    
+    student_grades = [line[1:] for line in improved_list]
+    student_grades = [[float(grade) for grade in student] for student in student_grades] # or values = [list(map(float, student)) for student in values]
 
-def show_count_scrabble_score():
+    list_of_students = []
+
+    for student_number in range(len(student_names)):
+        list_of_students.append(assignment_9.Student(student_names[student_number], student_grades[student_number], scrabble))
+    
+    return assignment_9.Database(list_of_students)
+
+
+def show_count_scrabble_score(data: assignment_9.Database):
     pass
 
 def show_count_average_grade():
@@ -49,6 +66,7 @@ if __name__ == "__main__":
   	# Reading in the data
     scrabble = read_scrabble_score("scrabble_scores.json")
     data = read_student_data("database.csv", scrabble)
+    print(data)
 
   	# # Plots for the main assignment 
     # show_count_scrabble_score(data)

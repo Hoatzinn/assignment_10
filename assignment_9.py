@@ -122,7 +122,7 @@ class Database:
     
     # allows addition of two Database instances
     def __add__(self, second_database):
-        return Database(self.list+ second_database.list)
+        return Database(self.list + second_database.list)
 
     # allows instances of Database to be called, which returns the abundance of an argument of student
     def __call__(self, object=lambda a : a.name_value()):
