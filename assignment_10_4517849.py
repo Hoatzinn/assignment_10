@@ -51,25 +51,28 @@ def read_student_data(path: str, scrabble: assignment_9.ScrabbleScorer) -> assig
 
 
 def show_count_scrabble_score(data: assignment_9.Database):
+    d = data()
+    x_axis = list(d.keys())
+    y_axis = list(d.values())
+    plt.bar(x_axis, y_axis)
+    plt.show()
+
+def show_count_average_grade(data: assignment_9.Database):
     pass
 
-def show_count_average_grade():
+def show_average_grade_vs_scrabble_score(data: assignment_9.Database):
     pass
 
-def show_average_grade_vs_scrabble_score():
-    pass
-
-def show_name_length_vs_scrabble_score():
+def show_name_length_vs_scrabble_score(data: assignment_9.Database):
     pass
 
 if __name__ == "__main__":
   	# Reading in the data
     scrabble = read_scrabble_score("scrabble_scores.json")
     data = read_student_data("database.csv", scrabble)
-    print(data)
 
-  	# # Plots for the main assignment 
-    # show_count_scrabble_score(data)
+  	# Plots for the main assignment 
+    show_count_scrabble_score(data)
     # show_count_average_grade(data)
     # show_name_length_vs_scrabble_score(data)
     # show_average_grade_vs_scrabble_score(data)
