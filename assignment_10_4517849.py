@@ -55,13 +55,22 @@ def show_count_scrabble_score(data: assignment_9.Database):
     x_axis = list(d.keys())
     y_axis = list(d.values())
     plt.bar(x_axis, y_axis)
+    plt.ylabel("Abundance of name values")
+    plt.xlabel("Scrabble score")
+    plt.title("Scrabble score count")
     plt.show()
 
 def show_count_average_grade(data: assignment_9.Database):
-    pass
+    average_grades = list(map(lambda student: np.mean(student.get_grades()), data.list))
+
+    plt.hist(average_grades, 25)
+    plt.ylabel("Amount of averages grades")
+    plt.xlabel("Average grade")
+    plt.title("Abundance of student grades")
+    plt.show()
 
 def show_average_grade_vs_scrabble_score(data: assignment_9.Database):
-    pass
+    pasd
 
 def show_name_length_vs_scrabble_score(data: assignment_9.Database):
     pass
@@ -72,8 +81,8 @@ if __name__ == "__main__":
     data = read_student_data("database.csv", scrabble)
 
   	# Plots for the main assignment 
-    show_count_scrabble_score(data)
-    # show_count_average_grade(data)
+    # show_count_scrabble_score(data)
+    show_count_average_grade(data)
     # show_name_length_vs_scrabble_score(data)
     # show_average_grade_vs_scrabble_score(data)
 
