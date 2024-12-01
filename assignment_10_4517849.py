@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
 import assignment_9
+from pprint import pprint
 
 def read_scrabble_score(path:str) -> assignment_9.ScrabbleScorer:
     with open(path, "r") as file:
@@ -50,7 +51,7 @@ def read_student_data(path: str, scrabble: assignment_9.ScrabbleScorer) -> assig
     return assignment_9.Database(list_of_students)
 
 
-def show_count_scrabble_score(data: assignment_9.Database):
+def show_count_scrabble_score(data: assignment_9.Database) -> None:
     d = data()
     x_axis = list(d.keys())
     y_axis = list(d.values())
@@ -60,33 +61,47 @@ def show_count_scrabble_score(data: assignment_9.Database):
     plt.title("Scrabble score count")
     plt.show()
 
-def show_count_average_grade(data: assignment_9.Database):
+def show_count_average_grade(data: assignment_9.Database) -> None:
     average_grades = list(map(lambda student: np.mean(student.get_grades()), data.list))
 
-    plt.hist(average_grades, 25)
+    plt.hist(average_grades, 50)
     plt.ylabel("Amount of averages grades")
     plt.xlabel("Average grade")
     plt.title("Abundance of student grades")
     plt.show()
 
-def show_average_grade_vs_scrabble_score(data: assignment_9.Database):
-    pasd
+def show_average_grade_vs_scrabble_score(data: assignment_9.Database) -> None:
+    average_grades = list(map(lambda student: np.mean(student.get_grades()), data.list))
+    scrabble_scores = list(map(lambda student: student.name_value(), data.list))
 
-def show_name_length_vs_scrabble_score(data: assignment_9.Database):
-    pass
+    plt.scatter(average_grades, scrabble_scores, 2)
+    plt.xlabel("Average grade")
+    plt.ylabel("Name value")
+    plt.title("Average grade vs Scrabble Score")
+    plt.show()
+
+def show_name_length_vs_scrabble_score(data: assignment_9.Database) -> None:
+    name_lengths = list(map(lambda student: len(student.name), data.list))
+    scrabble_scores = list(map(lambda student: student.name_value(), data.list))
+
+    plt.scatter(name_lengths, scrabble_scores, 4)
+    plt.xlabel("Length of student name")
+    plt.ylabel("Name value")
+    plt.title("Student name length vs Scrabble Score")
+    plt.show()
 
 if __name__ == "__main__":
-  	# Reading in the data
+    # Reading in the data
     scrabble = read_scrabble_score("scrabble_scores.json")
     data = read_student_data("database.csv", scrabble)
 
-  	# Plots for the main assignment 
-    # show_count_scrabble_score(data)
+    # Plots for the main assignment
+    show_count_scrabble_score(data)
     show_count_average_grade(data)
-    # show_name_length_vs_scrabble_score(data)
-    # show_average_grade_vs_scrabble_score(data)
+    show_average_grade_vs_scrabble_score(data)
+    show_name_length_vs_scrabble_score(data)
 
-  	# Uncomment the code below for the extra bits
+    # Uncomment the code below for the extra bits
   
     # # Extra Bit Option 1
     # show_programming_history("programming_time_data.npy")
