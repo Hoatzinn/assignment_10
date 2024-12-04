@@ -231,37 +231,66 @@ def show_name_length_vs_scrabble_score(data: Database) -> None:
     plt.grid(True)
     plt.show()
 
-def show_programming_history(path:str) -> None:
-    data = np.load(path)
+def average_rgb(pixel_list: np.array) -> list[int, int, int]:
+    if pixel_list.shape[-1] != 3:
+        raise ValueError(f"Please insert list of lists (of lists) with final lists of 3 elements (rgb), not {pixel_list.shape[-1]} elements.")
+    result = []
 
-    years = list(range(2005, 2024))
-    print(data)
+    if len(pixel_list.shape) == 2:
+        for channel in range(3):
+            result.append(np.mean(list(map(lambda pix: pix[channel], pixel_list))))
 
-    for column in range(len(data[0])):
-        plt.plot(data[:, column], years)
-    plt.ylabel("Percentage (-)")
-    plt.xlabel(years)
+    elif len(pixel_list.shape) == 3:
+        temp_result = []
+        for line in pixel_list:
+            line_average = []
+            for channel in range(3):
+                line_average.append(np.mean(list(map(lambda pix: pix[channel], line))))
+            temp_result.append(line_average)
+        temp_result = np.array(temp_result).astype(int)
+        
+        for channel in range(3):
+            result.append(np.mean(list(map(lambda pix: pix[channel], temp_result))))
+
+    else:
+        raise ValueError(f"pixel_list has too many or too few dimension ({len(pixel_list.shape)} dimensions)")
+        
+    return np.array(result)
+
+
+def show_mask_pumpkin(image: np.array, size: int) -> None:
+    area = ((57, 122), (257, 322))
+    x1, y1 = area[0]
+    x2, y2 = area[1]
+
+    masked_image = image.copy()
+
+    for x in range(x1, x2, size):
+        for y in range(y1, y2, size):
+            # print(f"Changing area x1: {x} to x2: {x+size}, y1: {y} to y2: {y+size}")
+            masked_image[y:y+size, x:x+size] = average_rgb(image[y:y+size, x:x+size])    
+
+    plt.imshow(masked_image, interpolation='nearest')
     plt.show()
-    
 
 if __name__ == "__main__":
   	# Reading in the data
     scrabble = read_scrabble_score("scrabble_scores.json")
     data = read_student_data("database.csv", scrabble)
 
-  	# # Plots for the main assignment 
-    # show_count_scrabble_score(data)
-    # show_count_average_grade(data)
-    # show_average_grade_vs_scrabble_score(data)
-    # show_name_length_vs_scrabble_score(data)
+  	# Plots for the main assignment 
+    show_count_scrabble_score(data)
+    show_count_average_grade(data)
+    show_average_grade_vs_scrabble_score(data)
+    show_name_length_vs_scrabble_score(data)
 
   	# Uncomment the code below for the extra bits
   
     # Extra Bit Option 1
-    show_programming_history("programming_time_data.npy")
+    # show_programming_history("programming_time_data.npy")
 
-    # # Extra Bit Option 2
-  	# # If pillow is not installed on your computer you can install it using: "conda install pillow"
-  	# with Image.open("pumpkin.png") as img:
-    #     img = np.array(img)
-    # show_mask_pumpkin(img, size=5)
+    # Extra Bit Option 2
+  	# If pillow is not installed on your computer you can install it using: "conda install pillow"
+    with Image.open("pumpkin.png") as img:
+        img = np.array(img)
+    show_mask_pumpkin(img, size=10)
