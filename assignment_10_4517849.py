@@ -6,12 +6,19 @@ import numpy as np
 from PIL import Image
 
 #region assignment 9
-# define the ScrabbleScorer class, which takes one argument, of type dictionary
 class ScrabbleScorer:
+    """
+    A class representing a scrabble score
+
+    Attributes:
+        scrabble_scores (dict): the scores of each of the letters in the alphabet
+    -----------------------------------------------------------------------------
+    Notable methods:
+        __call__: an instance of ScrabbleScorer is callable and can be used to calculate the score of a input-string
+    """
     def __init__(self, scrabble_scores:dict):
         self.scrabble_scores = scrabble_scores
     
-    # __call__ takes one argument of type string, and returns the score of that string based on the scores of the characters according to scrabble_scores
     def __call__(self, input_string:str) -> int:
         input_string = input_string.upper()
         score = 0
@@ -20,7 +27,6 @@ class ScrabbleScorer:
                 score += self.scrabble_scores[char]
         return score
     
-    # __eq__ allows instances of ScrabbleScorer to be checked on equality according to the scrabble_scores dictionary
     def __eq__(self, scrabble_scores):
         return scrabble_scores.scrabble_scores == self.scrabble_scores
     
@@ -28,39 +34,45 @@ class ScrabbleScorer:
         return str(self.scrabble_scores)
 
 
-# define the Student class which takes a name a list of grades and a scrabble_scorer of type dict or of type ScrabbleScorer
 class Student:
+    """
+    A class representing a student
+
+    Attributes:
+        name (str): the name of the student
+        grades (list): a list of floats containing the grades of the student
+        scrabble_scorer (dict or ScrabbleScorer): the scrabble scores for each letter of the student
+    ------------------------------------------------------------------------------------------------
+    Notable methods:
+        new_grade: adds a grade (float) to the student
+        getter and setter methods: get_grades, set_grades, get_scrabble_scorer and set_scrabble_scorer
+        name_value: returns the score of the student-name based of of the scrabble_scorer parameter
+    """
     def __init__(self, name:str, grades:list, scrabble_scorer:dict | ScrabbleScorer):
         self.name = name
         self.grades = grades
 
-        # checks what the type is of scrabble_scorer and adjusts the self.scrabble_scorer variable accordingly
         if isinstance(scrabble_scorer, dict):
             scrabble_scorer = ScrabbleScorer(scrabble_scorer)
         self.scrabble_scorer = scrabble_scorer
 
         self.num = 0
 
-    # this function adds a grde to self.grade
     def new_grade(self, grade:float):
         self.grades.append(grade)
     
-    # this function returns self.grades
     def get_grades(self):
         return self.grades
 
-    # this function changes self.grades to the input grades
     def set_grades(self, grades = []):
         if isinstance(grades, list):
             self.grades = grades
         else:
             raise TypeError(f"grades must be of type list (not {type(grades)})")
     
-    # this function returns the scrabble_scorer variable
     def get_scrabble_scorer(self):
         return self.scrabble_scorer
     
-    # this function allows for setting the scrabble_scorer from a function
     def set_scrabble_scorer(self, scrabble_scorer:dict | ScrabbleScorer):
         if isinstance(scrabble_scorer, dict):
             self.scrabble_scorer = ScrabbleScorer(scrabble_scorer)
@@ -69,15 +81,12 @@ class Student:
         else:
             raise TypeError(f"scrabblescorer must be of type ScrabbleScorer (not {type(scrabble_scorer)})")
     
-    # allows for calculating of the value of the student
     def name_value(self):
         return self.scrabble_scorer(self.name)
     
-    # representation of student
     def __repr__(self):
         return f"Student(name={self}, grades={self.grades})"
 
-    # all comparison operators
     def __gt__(self, student):
         return self.name_value() > student.name_value()
     def __lt__(self, student):
@@ -91,46 +100,39 @@ class Student:
     def __ne__(self, student):
         return self.name_value() != student.name_value()
     
-    
-    # this function calculates the length of the grades
+
     def __len__(self):
         return len(self.grades)
 
-    # this function allows the student to be used as an iterator
     def __iter__(self):
-        self.num = 0
-        return self
-    
-    # this function iterates through the grades
-    def __next__(self):
-        if self.num > len(self.grades)-1:
-            raise StopIteration
-        else:
-            self.num += 1
-            return self.grades[self.num-1]
-    
-    # string representation of Student, with self.name as output
+        return iter(self.grades)
+ 
     def __str__(self):
         return self.name
 
-# define the Database class which takes one optional list as input
 class Database:
+    """
+    A class representing a database of students
+
+    Attributes:
+        input_list (list): a list containing all the students
+    ---------------------------------------------------------
+    Notable methods:
+        sort: sorts the Database based on a key
+        __call__: an instance of this class is callable and can used to return the abundance of a key input
+    """
     def __init__(self, input_list:list = []):
         self.list = input_list
     
-    # this function allows the database to be sorted using a function as input, and to be reversed using the reverse argument
     def sort(self, key=lambda a:a, reverse=False):
         self.list.sort(key=key, reverse=reverse)
 
-    # string representation of a Database instance
     def __repr__(self):
         return str([student for student in self.list])
     
-    # allows addition of two Database instances
     def __add__(self, second_database):
         return Database(self.list + second_database.list)
 
-    # allows instances of Database to be called, which returns the abundance of an argument of student
     def __call__(self, object=lambda a : a.name_value()):
         dictionary = {}
         
@@ -147,6 +149,14 @@ class Database:
 #endregion
 
 def read_scrabble_score(path:str) -> ScrabbleScorer:
+    """
+    Reads the contents of the scrabble_scores.json file and returns a ScrabbleScorer object based on the contents.
+
+        Parameters:
+            path (str): the path of the JSON file
+        Returns:
+            scrabble_score (ScrabbleScorer): Scrabble scores for a Student instance
+    """
     with open(path, "r") as file:
         content = file.readlines()
     
@@ -154,13 +164,22 @@ def read_scrabble_score(path:str) -> ScrabbleScorer:
     dictionary = {}
     for line in content:
         if not line == content[-1]:
-            dictionary[line[5:6]] = int(line[9:-2])
+            dictionary[line[5]] = int(line[9:-2])
         else:
-            dictionary[line[5:6]] = int(line[-3:-1])
+            dictionary[line[5]] = int(line[9:-1])
 
     return ScrabbleScorer(dictionary)
 
 def read_student_data(path: str, scrabble: ScrabbleScorer) -> Database:
+    """
+    Reads the contents of the database.csv file and returns the contents in a Database instance
+
+        Parameters:
+            path (str): the path of the CSV file
+            scrabble (ScrabbleScorer): 
+        Returns:
+            data (Database): student data in Database format
+    """
     with open(path, "r") as file:
         content = file.read()
     content = content.split("\n")
@@ -191,6 +210,14 @@ def read_student_data(path: str, scrabble: ScrabbleScorer) -> Database:
 
 
 def show_count_scrabble_score(data: Database) -> None:
+    """
+    Reads contents from a Database-instance and shows a bar plot based on the abundance of Student.name_values scores
+        
+        Parameters:
+            data (Database): database containing Student-instances
+        Returns:
+            None
+    """
     d = data()
     x_axis = list(d.keys())
     y_axis = list(d.values())
@@ -201,15 +228,31 @@ def show_count_scrabble_score(data: Database) -> None:
     plt.show()
 
 def show_count_average_grade(data: Database) -> None:
+    """
+    Reads contents from a Database-instance and shows a hist plot based on the average grade of the Student-instances in it
+        
+        Parameters:
+            data (Database): database containing Student-instances
+        Returns:
+            None
+    """
     average_grades = list(map(lambda student: np.mean(student.get_grades()), data.list))
 
-    plt.hist(average_grades, 25)
+    plt.hist(average_grades, 50)
     plt.ylabel("Amount of averages grades")
     plt.xlabel("Average grade")
     plt.title("Abundance of student grades")
     plt.show()
 
 def show_average_grade_vs_scrabble_score(data: Database) -> None:
+    """
+    Reads contents from a Database-instance and shows a scatter plot based on average grade vs the name_value of the Student-instances 
+        
+        Parameters:
+            data (Database): data containing Student-instances
+        Returns:
+            None
+    """
     average_grades = list(map(lambda student: np.mean(student.get_grades()), data.list))
     scrabble_scores = list(map(lambda student: student.name_value(), data.list))
 
@@ -221,6 +264,14 @@ def show_average_grade_vs_scrabble_score(data: Database) -> None:
     plt.show()
 
 def show_name_length_vs_scrabble_score(data: Database) -> None:
+    """
+    Reads contents from a Database-instance and shows a scatter plot based on length of the names vs the name_value of the Student-instances
+        
+        Parameters:
+            data (Database): data containing Student-instances
+        Returns:
+            None
+    """
     name_lengths = list(map(lambda student: len(student.name), data.list))
     scrabble_scores = list(map(lambda student: student.name_value(), data.list))
 
@@ -231,7 +282,16 @@ def show_name_length_vs_scrabble_score(data: Database) -> None:
     plt.grid(True)
     plt.show()
 
-def average_rgb(pixel_list: np.array) -> list[int, int, int]:
+def average_rgb(pixel_list: np.array) -> np.array:
+    """
+    Return the average RGB of a 2D or 3D NumPy array
+
+        Parameters:
+            pixel_list (numpy.array): 2D or 3D array of RGB-values
+        
+        Returns:
+            RBG-value (np.array): average RGB value
+    """
     if pixel_list.shape[-1] != 3:
         raise ValueError(f"Please insert list of lists (of lists) with final lists of 3 elements (rgb), not {pixel_list.shape[-1]} elements.")
     result = []
@@ -259,6 +319,16 @@ def average_rgb(pixel_list: np.array) -> list[int, int, int]:
 
 
 def show_mask_pumpkin(image: np.array, size: int) -> None:
+    """
+    Shows a masked pumpkin image, where the pumpkin is pixelated
+
+        Parameters:
+            image (numpy.array): the image in numpy.array
+            size (int): changes the size of the pixels
+        
+        Returns:
+            None
+    """
     area = ((57, 122), (257, 322))
     x1, y1 = area[0]
     x2, y2 = area[1]
@@ -268,7 +338,7 @@ def show_mask_pumpkin(image: np.array, size: int) -> None:
     for x in range(x1, x2, size):
         for y in range(y1, y2, size):
             # print(f"Changing area x1: {x} to x2: {x+size}, y1: {y} to y2: {y+size}")
-            masked_image[y:y+size, x:x+size] = average_rgb(image[y:y+size, x:x+size])    
+            masked_image[y:y+size, x:x+size] = average_rgb(image[y:y+size, x:x+size])
 
     plt.imshow(masked_image, interpolation='nearest')
     plt.show()
