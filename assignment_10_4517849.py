@@ -344,23 +344,18 @@ def show_mask_pumpkin(image: np.array, size: int) -> None:
     plt.show()
 
 if __name__ == "__main__":
-  	# Reading in the data
+    # Reading in the data
     scrabble = read_scrabble_score("scrabble_scores.json")
     data = read_student_data("database.csv", scrabble)
 
-  	# Plots for the main assignment 
+    # Plots for the main assignment 
     show_count_scrabble_score(data)
     show_count_average_grade(data)
     show_average_grade_vs_scrabble_score(data)
     show_name_length_vs_scrabble_score(data)
 
-  	# Uncomment the code below for the extra bits
-  
-    # Extra Bit Option 1
-    # show_programming_history("programming_time_data.npy")
-
     # Extra Bit Option 2
-  	# If pillow is not installed on your computer you can install it using: "conda install pillow"
+    # If pillow is not installed on your computer you can install it using: "conda install pillow"
     with Image.open("pumpkin.png") as img:
         img = np.array(img)
     show_mask_pumpkin(img, size=10)
