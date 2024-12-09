@@ -219,9 +219,9 @@ def show_count_scrabble_score(data: Database) -> None:
             None
     """
     d = data()
-    x_axis = list(d.keys())
-    y_axis = list(d.values())
-    plt.bar(x_axis, y_axis)
+    scores = list(d.keys())
+    abundance = list(d.values())
+    plt.bar(scores, abundance)
     plt.ylabel("Abundance of name values")
     plt.xlabel("Scrabble score")
     plt.title("Scrabble score count")
